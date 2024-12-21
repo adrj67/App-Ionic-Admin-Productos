@@ -1,0 +1,58 @@
+<app-header title="inicio"></app-header>
+
+<ion-content>
+
+  <ion-list>
+    <ion-item-sliding class="product-item" *ngFor="let p of products">
+      <ion-item>
+        <ion-avatar slot="start">
+          <img [src]="p.image" />
+        </ion-avatar>
+        <ion-label>
+          <div class="name">{{ p.name }}</div>
+          <div class="data">
+            <strong>Precio:</strong> {{p.price | currency: 'USD'}}<br>
+            <strong>Unidades Vendidas:</strong>{{p.soldUnits}}
+          </div>
+
+          <ion-chip color="primary" mode="ios" outline="true">
+            <ion-label>Ganancia:{{p.price *p.soldUnits | currency: 'USD'}}</ion-label>
+          </ion-chip>
+
+
+
+        </ion-label>
+      </ion-item>
+
+      <!-- ============ Opciones ========== -->
+      <ion-item-options>
+
+        <!-- ============ Editar ========== -->
+        <ion-item-option (click)="addUpdateProduct(p)">
+          <ion-icon class="option-btn" name="create-outline"></ion-icon>
+        </ion-item-option>
+
+        <!-- ============ Borrar ========== -->
+        <ion-item-option (click)="deleteProduct(p)" color="danger">
+          <ion-icon class="option-btn" name="trash-outline"></ion-icon>
+        </ion-item-option>
+  
+      </ion-item-options>
+
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- ======= Si no hay Productos ==========-->
+  <ion-text *ngIf="products.length === 0">
+    <p>No hay productos disponibles.</p>
+  </ion-text>
+
+<!-- =============Nuevo Producto============ -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button (click)="addUpdateProduct()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+
+</ion-content>
