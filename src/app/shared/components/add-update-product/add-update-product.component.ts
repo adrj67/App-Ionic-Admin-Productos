@@ -51,6 +51,15 @@ export class AddUpdateProductComponent  implements OnInit {
     }
   }
 
+  // ========== Convierte valores de tipo string en la Base de datos a number para poder ordenar  ================
+  setNumberInputs(){
+
+    let { soldUnits, price} = this.form.controls;
+
+    if(soldUnits.value) soldUnits.setValue(parseFloat(soldUnits.value));
+    if(price.value) price.setValue(parseFloat(price.value));
+  }
+
  // ========== Crear Producto ========
   async createProduct(){
 

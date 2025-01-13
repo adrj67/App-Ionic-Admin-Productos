@@ -5,6 +5,8 @@ import { User } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { AddUpdateProductComponent } from 'src/app/shared/components/add-update-product/add-update-product.component';
+import { orderBy, where } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +19,7 @@ export class HomePage implements OnInit {
   utilsSvc = inject(UtilsService);
 
   products: Product[] = [];
+  loading: boolean = false;
 
   ngOnInit() {
     console.log('home.page.ts')
@@ -40,20 +43,43 @@ export class HomePage implements OnInit {
     this.getProducts();
   }
 
-  // ============= Obtener productos ===========
+  // ======= Refresca la lista de Productos si se corta la conexion o deseo actualizar =======
+  doRefresh(event) {
+    setTimeout(() => {
+      this.getProducts();
+      event.target.complete();
+    }, 1000);
+  }
+
+  // ======== Obtener las Ganancias ===========
+  getProfits(){
+    return this.products.reduce((index, product) => index + product.price * product.soldUnits, 0);
+  }
+
+  // ============= ORIGINAL Obtener productos ===========
   getProducts(){
     let path = `users/${this.user().uid}/products` // comilla simple invertida
 
-    let sub = this.firebaseSvc.getCollectionData(path).subscribe({
+    this.loading = true;
+    // Orden en el que nuestra la lista de productos
+    let query = [
+      orderBy('soldUnits', 'desc'),
+      //where('soldUnits', '>', 4)
+    ]
+
+    let sub = this.firebaseSvc.getCollectionData(path, query).subscribe({
       next: (res:any) => {
         console.log('Productos obtenidos: ', res);
         this.products = res;
+        this.loading = false;
         sub.unsubscribe();
       }, error: (err) => {
         console.log('Error al obtener el producto: ', err);
       }
     });
   }
+
+
 
   //========== Agregar o actualizar producto ==========
   async addUpdateProduct(product?: Product){
@@ -68,6 +94,25 @@ export class HomePage implements OnInit {
     if(success) this.getProducts();
   }
 
+  // ============ Confirmar la eliminacion del producto ===============
+  async confirmDeleteProduct(product: Product) {
+    this.utilsSvc.presentAlert({
+      header: 'Eliminar Producto',
+      message: '¿Quieres eliminar este producto?',
+      mode: 'ios',
+      buttons: [
+        {
+          text: 'Cancelar',
+        }, {
+          text: 'Si, eliminar',
+          handler: () => {
+            this.deleteProduct(product);
+          }
+        }
+      ]
+    });
+
+  }
   
   // ========== Eliminar Producto ========
   async deleteProduct(product: Product) {

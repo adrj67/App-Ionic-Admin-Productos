@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { LoadingController, ModalController, ModalOptions, ToastController, ToastOptions } from '@ionic/angular';
+import { AlertController, AlertOptions, LoadingController, ModalController, ModalOptions, ToastController, ToastOptions } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +12,7 @@ export class UtilsService {
   toastCtrl = inject(ToastController);
   modalCtrl = inject(ModalController);
   router = inject(Router);
+  alertCtrl = inject(AlertController);
 
   async takePicture(promptLabelHeader: string) {
     return await Camera.getPhoto({
@@ -25,6 +26,12 @@ export class UtilsService {
     });
 
   };
+
+  //========= Alert =============
+  async presentAlert(opts?: AlertOptions) {
+    const alert = await this.alertCtrl.create(opts);
+    await alert.present();
+  }
 
   //=========Loading=============
   loading(){
@@ -44,11 +51,13 @@ export class UtilsService {
 
   //========== Guardar un elemento en localstorage =============
   saveInLocalStorage(key: string, value: any){
+    console.log("Guardando usuario en localStorage ");
     return localStorage.setItem(key, JSON.stringify(value));
   }
 
   //========== Obtiene un elemento en localstorage =============
   getFromLocalStorage(key: string){
+    //console.log("Obtiene un elemento en localstorage")
     return JSON.parse(localStorage.getItem(key));
   }
 

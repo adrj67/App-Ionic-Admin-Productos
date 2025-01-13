@@ -22,11 +22,13 @@ export class FirebaseService {
 
   //======== Autenticacion =================================
   getAuth(){
+    console.log("getAuth en firebase.service")
     return getAuth();
   }
 
   //========== Acceder ==========
   signIn(user: User){
+    console.log("signIn en firebase.service")
     return signInWithEmailAndPassword(getAuth(), user.email, user.password);
   }
 
@@ -47,6 +49,7 @@ export class FirebaseService {
 
    //========== Cerrar Sesion ==========
    signOut(){
+    console.log("Sesión cerrada" )
     getAuth().signOut();
     localStorage.removeItem('user');
     this.utilsSvc.routerLink('/auth')
@@ -59,7 +62,7 @@ export class FirebaseService {
   // =========== Obtener documentos de una coleccion =================
   getCollectionData(path: string, collectionQuery?: any){
     const ref = collection(getFirestore(), path);
-    return collectionData(query(ref, collectionQuery), {idField: 'id'});
+    return collectionData(query(ref, ...collectionQuery), {idField: 'id'});
   } 
 
   // ======= Setear un documento (guardar datos del usuario en BD)========

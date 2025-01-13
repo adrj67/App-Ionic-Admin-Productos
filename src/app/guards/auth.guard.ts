@@ -24,7 +24,8 @@ export class AuthGuard implements CanActivate {
         if (auth) {
           resolve(true); // Permitir acceso
         } else {
-          this.utilsSvc.routerLink('/auth'); // Redirigir a la página de autenticación
+          this.firebaseSvc.signOut();
+          //this.utilsSvc.routerLink('/auth'); // Redirigir a la página de autenticación
           resolve(false); // Bloquear navegación
         }
       });
